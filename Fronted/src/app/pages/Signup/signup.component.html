@@ -1,0 +1,56 @@
+<div class="signup-container">
+    <h1>Sign Up</h1>
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+        <div class="field">
+            <label for="fullname">Full Name:</label>
+            <input 
+                type="text"
+                placeholder="Enter your full name..."
+                name="fullname"
+                formControlName="fullname"/>
+            <small *ngIf="fullname?.invalid && (fullname?.dirty || fullname?.touched)">
+                <div *ngIf="fullname?.errors?.['required']">Full name is required</div>
+            </small>
+        </div>
+        <div class="field">
+            <label for="username">Username:</label>
+            <input 
+                type="text"
+                placeholder="Enter your username..."
+                name="username"
+                formControlName="username"/>
+            <small *ngIf="username?.invalid && (username?.dirty || username?.touched)">
+                <div *ngIf="username?.errors?.['required']">Username is required</div>
+                <div *ngIf="username?.errors?.['minlength']">Username should be at least 3 characters long</div>
+            </small>
+        </div>
+        <div class="field">
+            <label for="email">Email:</label>
+            <input 
+                type="text"
+                placeholder="Enter your email..."
+                name="email"
+                formControlName="email"/>
+            <small *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+                <div *ngIf="email?.errors?.['required']">Email is required</div>
+                <div *ngIf="email?.errors?.['email']">Email should be valid</div>
+            </small>
+        </div>
+        <div class="field">
+            <label for="password">Password:</label>
+            <input 
+                type="password"
+                placeholder="Enter your password"
+                name="password"
+                formControlName="password"/>
+            <small *ngIf="password?.invalid && (password?.dirty || password?.touched)">
+                <div *ngIf="password?.errors?.['required']">Password is required</div>
+                <div *ngIf="password?.errors?.['minlength']">Password should be at least 6 characters long</div>
+            </small>
+        </div>
+        <app-button [buttonText]="buttonText"></app-button>
+        <div class="login-link">
+            Already a member? <a routerLink="/login">Login</a>
+        </div>
+    </form>
+</div>

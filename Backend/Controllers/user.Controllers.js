@@ -68,29 +68,21 @@ const registerUser = asyncHandler(async (request, response) => {
       )
     );
 });
-
-// Login User
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, username, password } = req.body;
-  console.table(req.body);
+  const { email, password } = req.body;
 
-  if (!email && !username) {
-    throw new ApiError(400, "Username or email must be provided");
+  if (!email) {
+    throw new ApiError(400, "Email must be provided");
   }
 
   if (!password) {
-    throw new ApiError(400, "Password must be provided");
+    throw new ApiError(400, "Password must be provided");  
   }
 
- 
+  try {
     // Check if the user exists in the database
-
-    const checkUserQuery =
-      "SELECT * FROM users WHERE email = $1 and username = $2";
-    const checkUserResult = await client.query(checkUserQuery, [
-      email,
-      username,
-    ]);
+    const checkUserQuery = "SELECT * FROM users WHERE email = $1";
+    const checkUserResult = await client.query(checkUserQuery, [email]);
 
     if (checkUserResult.rows.length === 0) {
       throw new ApiError(400, "User does not exist");
@@ -98,40 +90,44 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const user = checkUserResult.rows[0];
 
-    // compare the provided password with the stored hashed password
-
+    // Compare the provided password with the stored hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       throw new ApiError(400, "Invalid credentials");
     }
 
+    // Generate JWT token for the user
     const token = await generateToken(user);
 
     const options = {
       httpOnly: true,
       secure: true,
+  
     };
 
+    // Set token in cookie and send JSON response
     return res
       .status(200)
       .cookie("token", token, options)
-      .json(
-        new ApiResponse(
-          200,
-          {
-            user: {
-              id: user.id,
-              username: user.username,
-              email: user.email,
-              fullname: user.fullname,
-              token,
-            },
+      .json({
+        status: 200,
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            fullname: user.fullname,
+            token,
           },
-          "User logged in successfully"
-        )
-      );
-  } 
-);
+        },
+        message: "User logged in successfully",
+      });
+  } catch (error) {
+    console.error("Error in loginUser:", error);
+    throw new ApiError(500, "Internal Server Error");
+  }
+});
+
 
 module.exports = { registerUser, loginUser };

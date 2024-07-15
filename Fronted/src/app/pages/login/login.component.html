@@ -1,0 +1,35 @@
+<div class="login-container">
+    <h1>Login</h1>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="field">
+            <label for="email">Email:</label>
+            <input 
+                type="text"
+                placeholder="Enter your email..."
+                name="email"
+                formControlName="email"/>
+            <small *ngIf="email?.invalid && (email?.dirty || email?.touched)">
+                <div *ngIf="email?.errors?.['required']">Email is required</div>
+                <div *ngIf="email?.errors?.['email']">Email should be valid</div>
+            </small>
+        </div>
+        <div class="field">
+            <label for="password">Password:</label>
+            <input 
+                type="password"
+                placeholder="Enter your password"
+                name="password"
+                formControlName="password"/>
+            <small *ngIf="password?.errors?.['required'] && (password?.dirty || password?.touched)">
+        Password is required
+    </small>
+    <small *ngIf="password?.errors?.['minlength'] && (password?.dirty || password?.touched)">
+        Password should be at least 6 characters long
+    </small>
+        </div>
+        <app-button [buttonText]="buttonText" ></app-button>
+        <div class="register-link">
+            Not a member? <a routerLink="/register">Register</a>
+        </div>
+    </form>
+</div>
