@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { UserAuthServiceService } from 'src/app/services/userAuth/user-auth-service.service';
 
 @Component({
@@ -8,12 +9,13 @@ import { UserAuthServiceService } from 'src/app/services/userAuth/user-auth-serv
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  loginForm :FormGroup;
+  loginForm: FormGroup;
   buttonText: string = 'Login';
 
   constructor(
     private fb: FormBuilder,
-    private authServices: UserAuthServiceService
+    private authServices: UserAuthServiceService,
+    private router: Router
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -28,9 +30,13 @@ export class LoginComponent {
       this.authServices.login(this.loginForm.value).subscribe(
         (response) => {
           console.log('Login successful', response);
+          const userData = response.data.user;
+          localStorage.setItem('Bearer ', JSON.stringify(userData));
+          this.router.navigate(['/home'], { state: { user: userData } });
         },
         (error) => {
           console.error('Login Error:', error);
+          alert(error.error.error);
           if (error.status === 401) {
             console.error('Unauthorized. Please check your credentials.');
           } else if (error.status === 500) {
@@ -44,6 +50,7 @@ export class LoginComponent {
       );
     } else {
       console.error('Form is invalid');
+      alert('please field the credentials');
     }
   }
 

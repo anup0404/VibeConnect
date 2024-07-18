@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { UserAuthServiceService } from 'src/app/services/userAuth/user-auth-service.service';
 
 @Component({
@@ -13,7 +14,8 @@ export class SignupComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authServices: UserAuthServiceService
+    private authServices: UserAuthServiceService,
+    private router:Router
   ) {
     this.signupForm = this.fb.group({
       fullname: ['', Validators.required],
@@ -30,9 +32,11 @@ export class SignupComponent {
         (response) => {
           console.table('Success', response);
           this.signupForm.reset();
+          this.router.navigate(['/login']);
         },
         (error) => {
           console.error('Signup Error:', error);
+          alert(error.error.message)
           if (error.status === 500) {
             console.error('Internal Server Error. Please try again later.');
           } else {

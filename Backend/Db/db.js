@@ -17,7 +17,7 @@ const connectToDB = async () => {
     console.log('PG Connected successfully !!!');
   } catch (err) {
     console.error('Connection error:', err.stack);
-    process.exit(1); // Exit the process if connection fails
+    process.exit(1);
   }
 };
 
